@@ -3,5 +3,5 @@ export default interface ICreateUserDTO {
     email: string
     password: string
     age: string
-    avatar?: string
+    avatar: string
 }

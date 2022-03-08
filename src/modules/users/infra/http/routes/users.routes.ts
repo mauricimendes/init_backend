@@ -1,19 +1,16 @@
-import { Router } from "express"
-import { celebrate, Joi, Segments } from "celebrate"
+import { Router, Request, Response } from "express"
+import multer from "multer"
 
 import UsersController from "../controllers/UsersController"
+import uploadConfig from "@config/upload"
+import ensureAuthenticated from "../middlewares/ensureAuthenticated"
 
 const usersRouter = Router()
 const usersController = new UsersController
+const upload = multer(uploadConfig.multer)
 
-usersRouter.post('/', celebrate({
-    [Segments.BODY]: {
-        name: Joi.string().required(),
-        email: Joi.string().email().required(),
-        password: Joi.string().required(),
-        age: Joi.number().required(),
-        avatar: Joi.string()
-    }
-}), usersController.store)
+usersRouter.post('/', upload.single('avatar'), usersController.store)
+usersRouter.put('/:id', ensureAuthenticated, upload.single('avatar'), usersController.update)
+usersRouter.delete('/:id', ensureAuthenticated, usersController.destroy)
 
 export default usersRouter

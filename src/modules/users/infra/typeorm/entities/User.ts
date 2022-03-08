@@ -7,7 +7,8 @@ import {
     DeleteDateColumn
 } from 'typeorm'
 
-import { Exclude } from 'class-transformer'
+import { Exclude, Expose } from 'class-transformer'
+import uploadConfig from '@config/upload'
 
 @Entity('users')
 export default class User {
@@ -38,4 +39,18 @@ export default class User {
 
     @DeleteDateColumn()
     deleted_at: Date
+
+    @Expose({ name: 'avatar_url' })
+    getAvatarUrl(): string | 'teste 1' | 'teste 2' {
+        if ( !this.avatar ) {
+            return 'teste 1'
+        }
+
+        switch ( uploadConfig.driver ) {
+            case 'disk':
+                return `http://localhost:3333/files/${this.avatar}`
+            default:
+                return 'teste 2'
+        }
+    }
 }
